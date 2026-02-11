@@ -23,26 +23,25 @@ import http from "http";
 // GET /users traz uma lista dos usuarios
 // POST /users adiciona um novo usuario
 
-let users = [];
+// Refazer a base de uma API para armazenar usuarios basicos
+
+const users = [];
 
 const server = http.createServer((req, res) => {
+  // A req = requisicao. Um objeto contendo informacoes sobre a requisicao
+  // A res = resposta. Um objeto com metodos para devolver uma resposta para o cliente
+  /* return res.end(JSON.stringify({method: req.method, url: req.url})
+  ) */
+
   const { method, url } = req;
-  console.log(method, url);
-
-  if (method == "GET" && url == "/users") {
-    res
-      .setHeader("Content-type", "application/json")
-      .writeHead(200)
-      .end(JSON.stringify(users));
+  if (method === "GET" && url === "/users") {
+    res.writeHead(200, {"Content-type" : "application/json"}).end(JSON.stringify(users))
+  }
+  if (method === "POST" && url === "/users")
+  { 
+    users.push({name: "bernardo", age: 22})
+    res.writeHead(201, {"Content-type" : "application/json"}).end(JSON.stringify(users))
   }
 
-  if (method == "POST" && url == "/users") {
-    users.push({
-      name: "bernardo",
-      age: 22,
-    });
-    res.writeHead(201).end("Aqui ele adiciona um novo usuario");
-  }
 });
-
 server.listen(3333);
