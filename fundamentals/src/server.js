@@ -1,4 +1,5 @@
 import http from "http";
+import json from "./middlewares/json.js"
 
 // A depender da rota que o front fazer a requisicao, a API node vai responder com uma funcao
 
@@ -33,20 +34,10 @@ const server = http.createServer(async (req, res) => {
   /* return res.end(JSON.stringify({method: req.method, url: req.url})
   ) */
   // Pegar a stream toda e coloca tudo em um unico buffer para usar e adicionar um novo usuario
-  const buffers = [];
-  for await (const chunk of req) {
-    buffers.push(chunk);
-  }
-  const objectReqString = Buffer.concat(buffers).toString();
-  // QUando usa o toString() do buffer ele retorna uma string, que nao da para acessar como se fosse um objeto no JS
-  // Logo, se usa a funcao JSON.parse(string : String) para converter uma string no formato de JSON em um objeto JSON
-
-  try {
-    req.body = JSON.parse(Buffer.concat(buffers).toString());
-  } catch {
-    req.body = null;
-  }
-  console.log(req)
+  
+  await json(req,res)
+  // Lembrando que como a funcao json vai receber a referencia aos objetos req e res, as mudancas que forem
+  // aplicadas dentro do escopo da funcao json tambem serao aplicadas dentro do escopo do objeto server
   const { method, url } = req;
 
   if (method === "GET" && url === "/users") {
