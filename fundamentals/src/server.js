@@ -27,21 +27,38 @@ import http from "http";
 
 const users = [];
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   // A req = requisicao. Um objeto contendo informacoes sobre a requisicao
   // A res = resposta. Um objeto com metodos para devolver uma resposta para o cliente
   /* return res.end(JSON.stringify({method: req.method, url: req.url})
   ) */
+  // Pegar a stream toda e coloca tudo em um unico buffer para usar e adicionar um novo usuario
+  const buffers = [];
+  for await (const chunk of req) {
+    buffers.push(chunk);
+  }
+  const objectReqString = Buffer.concat(buffers).toString();
+  // QUando usa o toString() do buffer ele retorna uma string, que nao da para acessar como se fosse um objeto no JS
+  // Logo, se usa a funcao JSON.parse(string : String) para converter uma string no formato de JSON em um objeto JSON
 
+  try {
+    req.body = JSON.parse(Buffer.concat(buffers).toString());
+  } catch {
+    req.body = null;
+  }
+  console.log(req)
   const { method, url } = req;
-  if (method === "GET" && url === "/users") {
-    res.writeHead(200, {"Content-type" : "application/json"}).end(JSON.stringify(users))
-  }
-  if (method === "POST" && url === "/users")
-  { 
-    users.push({name: "bernardo", age: 22})
-    res.writeHead(201, {"Content-type" : "application/json"}).end(JSON.stringify(users))
-  }
 
+  if (method === "GET" && url === "/users") {
+    res
+      .writeHead(200, { "Content-type": "application/json" })
+      .end(JSON.stringify(users));
+  }
+  if (method === "POST" && url === "/users") {
+    users.push(req.body);
+    res
+      .writeHead(201, { "Content-type": "application/json" })
+      .end(JSON.stringify(users));
+  }
 });
 server.listen(3333);
