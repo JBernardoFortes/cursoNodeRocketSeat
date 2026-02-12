@@ -20,4 +20,8 @@ const response = await fetch("http://localhost:3335", {
   method: "POST",
   body: new RandomNumberStream(),
   duplex: "half",
+}).then(response => { 
+  return response.text()
+}).then(data => { 
+  console.log(data)
 });

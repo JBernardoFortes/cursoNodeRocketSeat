@@ -14,7 +14,17 @@ class doubleNumber extends Transform {
   }
 }
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
+  const buffer = [];
+
+  for await (const chunk of req) {
+    buffer.push(chunk);
+  }
+  buffer.pipe(new doubleNumber()).pipe(res);
+  const entireStreamData = Buffer.concat(buffer).toString();
+  // Os comandos acima sao para esperar todas os pedacos do arquivo que esta sendo recebido
+  // Isso eh usado para consumir JSON, que eh inviavel consumir ele por partes
+  // a fim de trabalhar com ele de uma so vez
   // A requisicao que ele vai receber eh uma Readable Stream
   // PAssar ela por uma transform Stream
   // Lembrando que o PIPE serve como se fosse um canal entre Streams !!
