@@ -1,5 +1,5 @@
 import http from "http";
-import json from "./middlewares/json.js"
+import json from "./middlewares/json.js";
 
 // A depender da rota que o front fazer a requisicao, a API node vai responder com uma funcao
 
@@ -34,8 +34,8 @@ const server = http.createServer(async (req, res) => {
   /* return res.end(JSON.stringify({method: req.method, url: req.url})
   ) */
   // Pegar a stream toda e coloca tudo em um unico buffer para usar e adicionar um novo usuario
-  
-  await json(req,res)
+
+  await json(req, res);
   // Lembrando que como a funcao json vai receber a referencia aos objetos req e res, as mudancas que forem
   // aplicadas dentro do escopo da funcao json tambem serao aplicadas dentro do escopo do objeto server
   const { method, url } = req;
