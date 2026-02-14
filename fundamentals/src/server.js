@@ -1,5 +1,6 @@
 import http from "http";
 import json from "./middlewares/json.js";
+import { randomUUID } from "node:crypto";
 import Database from "./database.js";
 
 // A depender da rota que o front fazer a requisicao, a API node vai responder com uma funcao
@@ -49,6 +50,7 @@ const server = http.createServer(async (req, res) => {
   }
   if (method === "POST" && url === "/users") {
     const user = {
+      id: randomUUID(),
       name: req.body.name,
       age: req.body.age,
     };
