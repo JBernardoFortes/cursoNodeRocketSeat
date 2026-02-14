@@ -1,5 +1,6 @@
 import http from "http";
 import json from "./middlewares/json.js";
+import Database from "./database.js";
 
 // A depender da rota que o front fazer a requisicao, a API node vai responder com uma funcao
 
@@ -26,7 +27,7 @@ import json from "./middlewares/json.js";
 
 // Refazer a base de uma API para armazenar usuarios basicos
 
-const users = [];
+const database = new Database();
 
 const server = http.createServer(async (req, res) => {
   // A req = requisicao. Um objeto contendo informacoes sobre a requisicao
@@ -41,15 +42,20 @@ const server = http.createServer(async (req, res) => {
   const { method, url } = req;
 
   if (method === "GET" && url === "/users") {
+    const users = database.select("users");
     res
       .writeHead(200, { "Content-type": "application/json" })
       .end(JSON.stringify(users));
   }
   if (method === "POST" && url === "/users") {
-    users.push(req.body);
+    const user = {
+      name: req.body.name,
+      age: req.body.age,
+    };
+    database.insert("users", user);
     res
       .writeHead(201, { "Content-type": "application/json" })
-      .end(JSON.stringify(users));
+      .end(JSON.stringify(user));
   }
 });
 server.listen(3333);
