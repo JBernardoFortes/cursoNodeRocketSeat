@@ -34,4 +34,35 @@ export default class Database {
     this.persist();
     return data;
   }
+  delete(table, name) {
+    if (
+      Array.isArray(this.database[table]) &&
+      this.database[table].length > 0
+    ) {
+      this.database[table] = this.database[table].filter((user) => {
+        return user.name !== name;
+      });
+      // O metodo filter nao altera o array original, entao tem que reatribuir
+    } else {
+      return false;
+    }
+    this.persist();
+    return true;
+  }
+  put(table, name, newName) {
+    if (
+      Array.isArray(this.database[table]) &&
+      this.database[table].length > 0
+    ) {
+      this.database[table].map((user) => {
+        if (user.name === name) {
+          user.name = newName;
+        }
+      });
+      this.persist();
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

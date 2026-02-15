@@ -1,8 +1,6 @@
 import http from "http";
 import json from "./middlewares/json.js";
-import { randomUUID } from "node:crypto";
-import Database from "./database.js";
-
+import { routes } from "./routes.js";
 // A depender da rota que o front fazer a requisicao, a API node vai responder com uma funcao
 
 // HTTP:
@@ -28,8 +26,6 @@ import Database from "./database.js";
 
 // Refazer a base de uma API para armazenar usuarios basicos
 
-const database = new Database();
-
 const server = http.createServer(async (req, res) => {
   // A req = requisicao. Um objeto contendo informacoes sobre a requisicao
   // A res = resposta. Um objeto com metodos para devolver uma resposta para o cliente
@@ -42,22 +38,11 @@ const server = http.createServer(async (req, res) => {
   // aplicadas dentro do escopo da funcao json tambem serao aplicadas dentro do escopo do objeto server
   const { method, url } = req;
 
-  if (method === "GET" && url === "/users") {
-    const users = database.select("users");
-    res
-      .writeHead(200, { "Content-type": "application/json" })
-      .end(JSON.stringify(users));
-  }
-  if (method === "POST" && url === "/users") {
-    const user = {
-      id: randomUUID(),
-      name: req.body.name,
-      age: req.body.age,
-    };
-    database.insert("users", user);
-    res
-      .writeHead(201, { "Content-type": "application/json" })
-      .end(JSON.stringify(user));
+  const route = routes.find((route) => {
+    return route.method === method && route.url === url;
+  });
+  if (route) {
+    route.handler(req, res);
   }
 });
 server.listen(3333);
