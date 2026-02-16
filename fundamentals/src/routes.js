@@ -1,5 +1,6 @@
 import Database from "./database.js";
 import { randomUUID } from "node:crypto";
+import { buildRoutePath } from "./utils/build-route-path.js";
 
 const database = new Database();
 
@@ -25,7 +26,7 @@ const database = new Database();
 export const routes = [
   {
     method: "GET",
-    url: "/users",
+    path: "/users",
     handler: (req, res) => {
       const users = database.select("users");
       res
@@ -37,7 +38,7 @@ export const routes = [
   },
   {
     method: "POST",
-    url: "/users",
+    path: "/users",
     handler: (req, res) => {
       const user = {
         id: randomUUID(),
@@ -54,14 +55,9 @@ export const routes = [
     //  name: "nome"
     // }
     method: "DELETE",
-    url: "/users",
+    path: buildRoutePath("/users/:id"),
     handler: (req, res) => {
-      const deleteFeedback = database.delete("users", req.body.name);
-      if (deleteFeedback) {
-        res.writeHead(200, { "Content-type": "application/json" }).end();
-      } else {
-        res.writeHead(404, { "Content-type": "application/json" }).end();
-      }
+      //const deleteFeedback = database.deleteById("users", )
     },
   },
   // PUT
@@ -71,7 +67,7 @@ export const routes = [
   // }
   {
     method: "PUT",
-    url: "/users",
+    path: "/users",
     handler: (req, res) => {
       // atualizar um usuario
       const putFeedback = database.put(
@@ -87,3 +83,17 @@ export const routes = [
     },
   },
 ];
+// How to edit all occurrences of the word under  the cursor in Neovim
+
+// 1) put the cursor on the word you want to change
+// 2) Press: *
+//  -> this searches for the next occurrence of the same word
+// 3) Press: c + gn
+//  -> "Change next match"
+//  -> Edit the current occurrence
+// 4) Press: <Esc> after finishing the edit
+// 5) Press: .
+//  -> Repeat the same change on the next occurrence
+//
+// NOTES : 
+//  -> This is NOT multi-cursor

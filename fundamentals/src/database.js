@@ -65,4 +65,38 @@ export default class Database {
       return false;
     }
   }
+  // Refazer o metodo DELETE e PUT mas agora usando o ID do usuario para buscar no banco de dados
+
+  deleteById(table, id) {
+    if (
+      !Array.isArray(this.database[table]) ||
+      this.database[table].length < 1
+    ) {
+      return null;
+    } else {
+      // De fato procurar no array da tabela ( table ) pelo ID que foi informado e retirar ele do database provisorio
+
+      const dataIndex = this.database[table].findIndex((data) => {
+        return data.id === id;
+      });
+      // The findIndex() method of ARRAY instances returns the index
+      // of the first element in an array that satisfies the
+      // provided testing function.
+      if (dataIndex < 0) {
+        return null;
+      }
+      let [deletedData] = this.database[table].splice(dataIndex, 1);
+      // The splice() method of Array instances changes the contents
+      // of an array by removing or replacing existings elements
+      // and/or adding new elements in place.
+
+      // splice(start,deleteCount,item1,item2, /*...,*/ itemN)
+
+      // It returns a array containing the deleted elements
+      // If only one element is removed, an array of one element
+      // is returned
+      this.persist();
+      return deletedData;
+    }
+  }
 }
