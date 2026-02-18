@@ -25,20 +25,8 @@ const database = new Database();
 
 export const routes = [
   {
-    method: "GET",
-    path: "/users",
-    handler: (req, res) => {
-      const users = database.select("users");
-      res
-        .writeHead(200, { "Content-type": "application/json" })
-        .end(JSON.stringify(users));
-      // Tava dando erro porque a resposta da requisicao estava sendo mandada como objeto e tem que, nesse caso,
-      // ser uma string no formato JSON
-    },
-  },
-  {
     method: "POST",
-    path: "/users",
+    path: buildRoutePath("/users"),
     handler: (req, res) => {
       const user = {
         id: randomUUID(),
@@ -50,6 +38,16 @@ export const routes = [
     },
   },
   {
+    method: "GET",
+    path: buildRoutePath("/users"),
+    handler: (_req, res) => {
+      const users = database.select("users");
+      res
+        .writeHead(200, { "Content-type": "application/json" })
+        .end(Buffer.from(JSON.stringify(users)));
+    },
+  },
+  {
     // DELETE
     // {
     //  name: "nome"
@@ -57,7 +55,12 @@ export const routes = [
     method: "DELETE",
     path: buildRoutePath("/users/:id"),
     handler: (req, res) => {
-      //const deleteFeedback = database.deleteById("users", )
+      const deleteFeedback = database.deleteById("users", req.params.id);
+      if (deleteFeedback) {
+        return res.writeHead(200, { "Content-type": "application/json" }).end();
+      } else {
+        return res.writeHead(404, { "Content-type": "application/json" }).end();
+      }
     },
   },
   // PUT
@@ -67,18 +70,20 @@ export const routes = [
   // }
   {
     method: "PUT",
-    path: "/users",
+    path: buildRoutePath("/users/:id"),
+    // Atualizar o metodo em si, para usar o id ao inves do nome
     handler: (req, res) => {
       // atualizar um usuario
-      const putFeedback = database.put(
-        "users",
-        req.body.name,
-        req.body.newName,
-      );
+      const { name, age } = req.body;
+      const putFeedback = database.putById("users", req.params.id, {
+        name,
+        age,
+      });
+
       if (putFeedback) {
         res.writeHead(200, { "Content-type": "application/json" }).end();
       } else {
-        res.writeHead(200, { "Content-type": "application/json" }).end();
+        res.writeHead(404, { "Content-type": "application/json" }).end();
       }
     },
   },
@@ -95,5 +100,5 @@ export const routes = [
 // 5) Press: .
 //  -> Repeat the same change on the next occurrence
 //
-// NOTES : 
+// NOTES :
 //  -> This is NOT multi-cursor

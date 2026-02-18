@@ -99,4 +99,24 @@ export default class Database {
       return deletedData;
     }
   }
+  putById(table, id, data) {
+    const { name, age } = data;
+    if (
+      !Array.isArray(this.database[table]) ||
+      this.database[table].length < 1
+    ) {
+      console.log("Sem array");
+      return null;
+    }
+    const index = this.database[table].findIndex((data) => {
+      return data.id == id;
+    });
+    if (index < 0) {
+      return null;
+    }
+
+    this.database[table][index] = { id, name, age };
+    this.persist()
+    return this.database[table][index];
+  }
 }
