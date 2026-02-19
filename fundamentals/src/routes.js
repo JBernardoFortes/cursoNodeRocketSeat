@@ -40,8 +40,9 @@ export const routes = [
   {
     method: "GET",
     path: buildRoutePath("/users"),
-    handler: (_req, res) => {
-      const users = database.select("users");
+    handler: (req, res) => {
+      const search = req.query
+      const users = database.select("users", search);
       res
         .writeHead(200, { "Content-type": "application/json" })
         .end(Buffer.from(JSON.stringify(users)));

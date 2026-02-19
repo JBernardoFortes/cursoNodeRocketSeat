@@ -21,8 +21,16 @@ export default class Database {
     // - Stringify : Passar um objeto no formato JSON para string
     // - Parse : Passar uma string no formato JSON para um objeto JSON
   }
-  select(table) {
-    return this.database[table] ?? [];
+  select(table, search) {
+    if (Object.keys(search).length === 0) {
+      return this.database[table] ?? [];
+    }
+    const { name } = search;
+    return (
+      this.database[table].filter((row) => {
+        return row.name.includes(name);
+      }) ?? []
+    );
   }
 
   insert(table, data) {
@@ -116,7 +124,7 @@ export default class Database {
     }
 
     this.database[table][index] = { id, name, age };
-    this.persist()
+    this.persist();
     return this.database[table][index];
   }
 }
