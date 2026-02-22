@@ -21,7 +21,7 @@ export default async function json(req, res) {
     const entireData = JSON.parse(Buffer.concat(buffer).toString());
     req.body = entireData;
   } catch (e) {
-    req.body = null
+    req.body = null;
   }
-    res.setHeader("Content-type", "application/json")
+  res.setHeader("Content-type", "application/json");
 }
